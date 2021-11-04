@@ -20,4 +20,9 @@ public class Define
         Left,
         Right,
     }
+    public enum Layer
+    {
+        Object = 8,
+        Player = 10,
+    }
 }

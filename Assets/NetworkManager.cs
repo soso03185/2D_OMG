@@ -10,12 +10,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public Text StatusText;
     public InputField roomInput, NickNameInput;
 
-
     void Awake() => Screen.SetResolution(960, 540, false);
 
     void Update() => StatusText.text = PhotonNetwork.NetworkClientState.ToString();
-
-
 
     public void Connect() => PhotonNetwork.ConnectUsingSettings();
 
@@ -24,8 +21,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         print("서버접속완료");
         PhotonNetwork.LocalPlayer.NickName = NickNameInput.text;
     }
-
-
 
     public void Disconnect() => PhotonNetwork.Disconnect();
 
