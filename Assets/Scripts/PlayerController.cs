@@ -9,6 +9,7 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
 {
     int _mask = (1 << (int)Define.Layer.Player) | (1 << (int)Define.Layer.Object);
+    public GameObject Bullet;
 
     public SpriteRenderer _sprite;
     public Animator _anim;
@@ -31,15 +32,16 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
     bool currSkill = true;
     bool currStop = true;
 
+   // float currHp = 1.0f;
     Vector3 currPos;
 
     // Define 관련
     CreatureState _state = CreatureState.Idle;
     public MoveDir _dir = MoveDir.None;
     public MoveDir _lastDir = MoveDir.Down;
-    
+
     float Speed = 10f;
-    Vector3 dirVec;
+    public Vector3 dirVec;
 
     public MoveDir Dir
     {
@@ -74,7 +76,7 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
     {
         Init();
     }
-    void Init()
+    protected virtual void Init()
     {
         _sprite = GetComponent<SpriteRenderer>();
         _rigid = GetComponent<Rigidbody2D>();
@@ -90,43 +92,18 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
         // Ray
         Debug.DrawRay(_rigid.position + new Vector2(0, 0.5f), dirVec * 1f, new Color(1, 0, 0));
         RaycastHit2D rayHit = Physics2D.Raycast(_rigid.position + new Vector2(0, 0.5f), dirVec, 1f, _mask);
-        if(rayHit == true)
+
+        // Target Lock On
+        if (rayHit == true)
             _scanObject = rayHit.collider.gameObject;
-
-        // Scan
-        if (Input.GetButtonDown("Jump"))
-        {
-            Debug.Log($"this name is : {_scanObject.name}");
-
-            if (rayHit.collider.gameObject.layer == (int)Define.Layer.Player)
-            {
-                Debug.Log($"Player name : {_scanObject.name}");
-
-                _scanObject = rayHit.collider.gameObject;
-                GameObject go = _scanObject;
-
-                if (go != null)
-                {
-                    PlayerController pc = go.GetComponent<PlayerController>();
-
-                    if (pc != null)
-                        pc.OnDamaged();
-                }
-                else
-                    return;
-            }
-            else
-                _scanObject = null;
-        }
-
+        else
+            _scanObject = null;
     }
     private void Update()
     {
         UpdateController();
-
-
         if (PV.IsMine)
-            Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10);       
+            Camera.main.transform.position = new Vector3(transform.position.x, transform.position.y, -10);
     }
 
     void GetDirInput() 
@@ -162,8 +139,6 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
                 isMove = false;
                 _anim.SetTrigger("isMoveStop");
             }
-
-
         }
         else
         {
@@ -204,18 +179,26 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
     }
     void UpdateIdle()
     {
+        // Photon
         isStop = true;
 
-        if (Dir != MoveDir.None)
-        {
-            State = CreatureState.Moving;
-            return;
-        }
+        // isIdle ?
+        if (Dir != MoveDir.None) { State = CreatureState.Moving; return; }
+
+        // Attack Button
         if (Input.GetKey(KeyCode.E) && PV.IsMine)
         {
             State = CreatureState.Skill;
             _coSkill = StartCoroutine("CoStartPunch");
             currSkill = true;
+
+            if (_scanObject == null)
+                return;
+        }
+
+        if (Input.GetKeyDown(KeyCode.R) && PV.IsMine)
+        {
+            PhotonNetwork.Instantiate(Bullet.name, transform.position + dirVec, Quaternion.identity);
         }
     }
 
@@ -337,7 +320,7 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
     }
 
     IEnumerator CoStartPunch()
-    {
+    {        
         if (PV.IsMine)
         {
             Debug.Log("CoStartPunch !");
@@ -356,10 +339,20 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
             _anim.SetBool("_isPunch", false);
         }
     }
-    public void OnDamaged()
-    {
-        Debug.Log("Player Hit !");
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Bullet"))
+        {
+            Debug.Log("Player Damaged !");
+
+            _imageHP.fillAmount -= 0.1f;
+
+            if(PV.IsMine && _imageHP.fillAmount <= 0.0f)
+            {
+                _imageHP.fillAmount = 1.0f;
+            }
+        }
     }
 
     void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -370,7 +363,7 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
             stream.SendNext(isSkill);
             stream.SendNext(isStop);
             stream.SendNext(_imageHP.fillAmount);
-            
+
             isSkill = false;
             isStop = false;
         }
