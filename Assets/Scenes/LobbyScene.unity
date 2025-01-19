@@ -524,7 +524,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   createInput: {fileID: 186967776}
   joinInput: {fileID: 1390229732}
-  roomNamePrefab: {fileID: 8775308460700309500, guid: f242af50483554846a81fc85094ac0f9,
+  roomNamePrefab: {fileID: 6657099664209087868, guid: f242af50483554846a81fc85094ac0f9,
     type: 3}
   roomListContainer: {fileID: 1283240830}
   m_RegionInfo: {fileID: 924198880}

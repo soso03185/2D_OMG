@@ -4,14 +4,21 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using static Define;
+using TMPro;
 
+/// <summary>
+/// 플레이어 조작 스크립트
+/// </summary>
+/// 
 public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
 {
+    public TextMeshProUGUI _playerName;
     public SpriteRenderer _sprite;
     public Animator _anim;
     Rigidbody2D _rigid;
     GameObject _scanObject;
     Coroutine _coSkill;
+    float Speed = 10f;
 
     // Photon 관련 변수들
     bool isSkill = false;
@@ -30,9 +37,7 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
     CreatureState _state = CreatureState.Idle;
     public MoveDir _dir = MoveDir.None;
     public MoveDir _lastDir = MoveDir.Down;
-    
-    float Speed = 10f;
-    Vector3 dirVec;
+    Vector3 dirVec;    
 
     public MoveDir Dir
     {
@@ -73,6 +78,11 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
         _sprite = GetComponent<SpriteRenderer>();
         _rigid = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
+
+        if (!PV.IsMine)
+        {
+            _playerName.color = Color.red;
+        }
     }
 
     private void FixedUpdate()
@@ -127,15 +137,12 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
                 Dir = MoveDir.Right;
                 isMove = true;
             }
-
             else
             {
                 Dir = MoveDir.None;
                 isMove = false;
                 _anim.SetTrigger("isMoveStop");
             }
-
-
         }
         else
         {
@@ -154,6 +161,7 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
             if (currStop) { _anim.SetTrigger("isMoveStop"); currStop = false; }
         }
     }
+
     void UpdateController()
     {
         switch (State)
@@ -174,6 +182,7 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
                 break;
         }
     }
+
     void UpdateIdle()
     {
         isStop = true;
@@ -359,7 +368,6 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
             currPos = (Vector3)stream.ReceiveNext();
             currSkill = (bool)stream.ReceiveNext();
             currStop = (bool)stream.ReceiveNext();
-
         }
     }
 }

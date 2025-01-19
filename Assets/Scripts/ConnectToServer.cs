@@ -17,7 +17,7 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
         if (!string.IsNullOrEmpty(m_PlayerName.text))
         {
             // 로비에 접속할 때 유저 이름 등록
-            PhotonNetwork.LocalPlayer.NickName = m_PlayerName.text + Random.Range(1000, 9999);
+            PhotonNetwork.LocalPlayer.NickName = m_PlayerName.text; // + Random.Range(1000, 9999);
             PhotonNetwork.ConnectUsingSettings();
         }
     }
@@ -37,7 +37,7 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
 
             Debug.Log($"현재 연결된 지역: {PhotonNetwork.CloudRegion}");
             Debug.Log($"현재 유저 이름: {PhotonNetwork.LocalPlayer.NickName}");
-            SceneManager.LoadScene("Lobby");
+            SceneManager.LoadScene("LobbyScene");
         }
         else
         {

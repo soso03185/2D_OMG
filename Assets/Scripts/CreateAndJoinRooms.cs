@@ -28,6 +28,7 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
 
         RefreshRoomList();
     }
+     
 
     private void RefreshRoomList()
     {
@@ -80,7 +81,11 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
             if (room.RemovedFromList) continue; // 방이 삭제된 경우 무시
 
             GameObject roomNameObject = Instantiate(roomNamePrefab, roomListContainer);
-            TextMeshProUGUI roomNameText = roomNameObject.GetComponent<Room>().m_RoomName;
+            Room roomComponent = roomNameObject.GetComponent<Room>();
+            Button roomBtn = roomNameObject.GetComponent<Button>();
+            TextMeshProUGUI roomNameText = roomComponent.m_RoomName;
+
+
             roomNameText.text = room.Name; // 방 이름 표시
             roomNameObjects.Add(roomNameObject);
         }
