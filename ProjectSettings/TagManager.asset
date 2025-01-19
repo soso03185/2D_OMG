@@ -16,7 +16,7 @@ TagManager:
   - Object
   - Collision
   - Player
-  - 
+  - Secondary
   - 
   - 
   - 
@@ -40,4 +40,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Secondary
+    uniqueID: 3549183771
     locked: 0

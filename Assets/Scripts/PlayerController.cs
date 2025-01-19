@@ -49,6 +49,7 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
             UpdateMoving();
         }
     }
+
     public CreatureState State
     {
         get { return _state; }
@@ -73,6 +74,7 @@ public class PlayerController : MonoBehaviourPunCallbacks,IPunObservable
         _rigid = GetComponent<Rigidbody2D>();
         _anim = GetComponent<Animator>();
     }
+
     private void FixedUpdate()
     {
         // Ray
