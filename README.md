@@ -1,2 +1,2 @@
 # 2D_OMG
-Unity__Level up_Together
+유니티 포톤2를 사용한 멀티 프로젝트 Study
